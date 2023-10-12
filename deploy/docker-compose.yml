@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+      target: prod
+    image: test_project_edt:${TEST_PROJECT_EDT_VERSION:-latest}
+    restart: always
+    env_file:
+    - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TEST_PROJECT_EDT_HOST: 0.0.0.0
+      TEST_PROJECT_EDT_DB_HOST: test_project_edt-db
+      TEST_PROJECT_EDT_DB_PORT: 5432
+      TEST_PROJECT_EDT_DB_USER: test_project_edt
+      TEST_PROJECT_EDT_DB_PASS: test_project_edt
+      TEST_PROJECT_EDT_DB_BASE: test_project_edt
+
+  db:
+    image: postgres:13.8-bullseye
+    hostname: test_project_edt-db
+    environment:
+      POSTGRES_PASSWORD: "test_project_edt"
+      POSTGRES_USER: "test_project_edt"
+      POSTGRES_DB: "test_project_edt"
+    volumes:
+    - test_project_edt-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: pg_isready -U test_project_edt
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+
+
+volumes:
+  test_project_edt-db-data:
+    name: test_project_edt-db-data
