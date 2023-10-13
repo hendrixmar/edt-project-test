@@ -4,18 +4,17 @@ from psycopg_pool import AsyncConnectionPool
 from pydantic import TypeAdapter
 
 from test_project_edt.db.models.restaurant import Restaurant
-from kink import inject
 
 from test_project_edt.db.models.statistics import Statistics
 
 
-@inject
+
 class PsycopgRestaurantRepository:
     def __init__(self, connection: AsyncConnectionPool):
-        self.__connection = connection
+        self.__connection  = connection
 
     async def get_all(self) -> List[Restaurant]:
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             res = await conn_check.execute(
                 """SELECT *
                     FROM restaurants
@@ -26,7 +25,7 @@ class PsycopgRestaurantRepository:
             return [Restaurant(**row) for row in rows]
 
     async def get(self, restaurant_id: int) -> Restaurant | None:
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             res = await conn_check.execute(
                 """SELECT *
                     FROM restaurants
@@ -42,7 +41,7 @@ class PsycopgRestaurantRepository:
             return Restaurant(**row)
 
     async def delete(self, restaurant_id: int) -> NoReturn:
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             await conn_check.execute(
                 """
                    DELETE
@@ -56,7 +55,7 @@ class PsycopgRestaurantRepository:
             )
 
     async def add(self, restaurant_data: Restaurant) -> Restaurant:
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             await conn_check.execute(
                 """
                     INSERT INTO Restaurants (id, rating, name, site, email, phone, street, city, state, lat, lng) VALUES
@@ -78,7 +77,7 @@ class PsycopgRestaurantRepository:
             return None
 
 
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             temp_data: Dict = TypeAdapter(Restaurant).dump_python(restaurant_data, exclude_none=True, exclude={'id'})
             set_arguments: str = f",".join(
                 f"{k} = %({k})s" for k, v in temp_data.items()
@@ -107,7 +106,7 @@ class PsycopgRestaurantRepository:
                              latitude: float,
                              longitude: float,
                              radius: float) -> Statistics:
-        async with self.__connection.connection() as conn_check:
+        async with self.__connection() as conn_check:
             res = await conn_check.execute(
                 """
                    SELECT count(*), avg(rating), stddev(rating)
@@ -125,6 +124,5 @@ class PsycopgRestaurantRepository:
 
             )
             row = await res.fetchone()
-            print(row)
             return Statistics(**row)
 
