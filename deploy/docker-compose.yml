@@ -46,5 +46,4 @@ services:
 
 volumes:
   test_project_edt-db-data:
-    external: true
     name: test_project_edt-db-data
