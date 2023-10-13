@@ -32,8 +32,7 @@ async def _setup_db(app: FastAPI) -> None:
     :param app: current FastAPI app.
     """
     app.state.db_pool = psycopg_pool.AsyncConnectionPool(conninfo=str(settings.db_url),
-                                                         kwargs={"row_factory": dict_row,
-                                                                 "sslmode": "disable"})
+                                                         kwargs={"row_factory": dict_row})
     await app.state.db_pool.wait()
 def create_dependency_container(app: FastAPI):
     di[AsyncConnectionPool] = app.state.db_pool

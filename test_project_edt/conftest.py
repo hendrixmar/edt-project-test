@@ -98,8 +98,6 @@ async def create_tables(connection: AsyncConnection[Any]) -> None:
     )
 
 
-
-
 @pytest.fixture
 async def dbpool() -> AsyncGenerator[AsyncConnectionPool, None]:
     """
