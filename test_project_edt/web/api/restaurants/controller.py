@@ -1,7 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status, Request
-
+from fastapi import APIRouter, Depends, status, Request, HTTPException
 
 from test_project_edt.db.models.restaurant import Restaurant
 from test_project_edt.db.models.statistics import Statistics
@@ -46,8 +45,8 @@ async def get_all_restaurants(
 
     result = await repository.get(restaurant_id)
     if not result:
-        raise ClientError(client_error_type=ClientErrorType.NOT_FOUND,
-                          message=f'Restaurant of id {restaurant_id} does not exist')
+        raise HTTPException(status_code=404, detail="Item not found")
+        
     return result
 
 
@@ -69,7 +68,6 @@ async def update_restaurant(
     repository: RestaurantRepository = Depends(inject_repository)
 ):
 
-    print(Restaurant(**restaurant_information.model_dump(exclude_none=True, exclude={'id'})))
     await repository.update(restaurant_id,
                             Restaurant(**restaurant_information.model_dump()))
 
@@ -80,6 +78,5 @@ async def delete_restaurant(
     restaurant_id: str,
     repository: RestaurantRepository = Depends(inject_repository)
 ):
-
 
     await repository.delete(restaurant_id)

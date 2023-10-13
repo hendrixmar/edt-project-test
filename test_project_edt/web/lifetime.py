@@ -99,6 +99,8 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     FastAPIInstrumentor().uninstrument_app(app)
 
 
+
+
 def register_startup_event(
     app: FastAPI,
 ) -> Callable[[], Awaitable[None]]:  # pragma: no cover
@@ -123,20 +125,6 @@ def register_startup_event(
 
     return _startup
 
-
-def attach_app_exception_handlers(app: FastAPI) -> None:
-    @app.exception_handler(ClientError)
-    async def client_exception_handler(_, e: ClientError) -> ORJSONResponse:
-        status_code: int = {
-            ClientErrorType.UNAUTHORIZED: status.HTTP_401_UNAUTHORIZED,
-            ClientErrorType.FORBIDDEN: status.HTTP_403_FORBIDDEN,
-            ClientErrorType.NOT_FOUND: status.HTTP_404_NOT_FOUND,
-            ClientErrorType.INVALID_INPUT: status.HTTP_400_BAD_REQUEST
-
-        }.get(e.client_error_type, status.HTTP_400_BAD_REQUEST)
-
-        return ORJSONResponse(status_code=status_code,
-                              content={'message': e.message})
 
 
 def register_shutdown_event(
