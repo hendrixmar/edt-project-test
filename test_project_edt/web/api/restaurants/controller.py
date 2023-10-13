@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 
 from test_project_edt.db.models.restaurant import Restaurant
+from test_project_edt.db.models.statistics import Statistics
 from test_project_edt.repository.pyscopg_restaurant_repository import \
     PsycopgRestaurantRepository
 from test_project_edt.repository.resturant_repository_protocol import \
@@ -23,6 +24,15 @@ async def get_all_restaurants(
 
     return await repository.get_all()
 
+@router.get("/restaurants/statistics")
+async def get_restaurants_statistics(
+    latitude: float,
+    longitude:float,
+    radius: float,
+    repository: RestaurantRepository = Depends(lambda: PsycopgRestaurantRepository())
+) -> Statistics:
+
+    return await repository.get_statistics(latitude, longitude, radius)
 
 @router.get("/restaurants/{restaurant_id}")
 async def get_all_restaurants(

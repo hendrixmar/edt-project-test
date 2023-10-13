@@ -1,6 +1,7 @@
 from typing import Protocol, runtime_checkable, List
 
 from test_project_edt.db.models.restaurant import Restaurant
+from test_project_edt.db.models.statistics import Statistics
 
 
 @runtime_checkable
@@ -21,4 +22,11 @@ class RestaurantRepository(Protocol):
     async def update(self,
                      restaurant_id: str,
                      restaurant_data: Restaurant) -> Restaurant:
+        ...
+    
+    
+    async def get_statistics(self,
+                             latitude: float,
+                             longitude: float,
+                             radius: float,) -> Statistics:
         ...

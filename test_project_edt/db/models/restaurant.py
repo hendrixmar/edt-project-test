@@ -16,4 +16,4 @@ class Restaurant:
     lng: float | None = None
     rating: int | None = Field(default=None, gte=0, lte=4)
     id: str = str(uuid.uuid4())
-    rating: int = Field(gte=0, lte=4)
+

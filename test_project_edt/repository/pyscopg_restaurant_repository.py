@@ -6,6 +6,8 @@ from pydantic import TypeAdapter
 from test_project_edt.db.models.restaurant import Restaurant
 from kink import inject
 
+from test_project_edt.db.models.statistics import Statistics
+
 
 @inject
 class PsycopgRestaurantRepository:
@@ -100,4 +102,29 @@ class PsycopgRestaurantRepository:
             )
 
             return restaurant_data
+
+    async def get_statistics(self,
+                             latitude: float,
+                             longitude: float,
+                             radius: float) -> Statistics:
+        async with self.__connection.connection() as conn_check:
+            res = await conn_check.execute(
+                """
+                   SELECT count(*), avg(rating), stddev(rating)
+                    FROM restaurants
+                    WHERE ST_DWithin(
+                        ST_SetSRID(ST_MakePoint(lng, lat),4326)::GEOGRAPHY, -- geometry column of cities table
+                        ST_SetSRID(ST_MakePoint(%(longitude)s, %(latitude)s),4326)::GEOGRAPHY, -- target point coordinates in (longitude, latitude) format
+                        %(radius)s);
+                """,
+                params={
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "radius": radius
+                }
+
+            )
+            row = await res.fetchone()
+            print(row)
+            return Statistics(**row)
 
