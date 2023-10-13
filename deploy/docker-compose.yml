@@ -22,14 +22,19 @@ services:
       TEST_PROJECT_EDT_DB_BASE: test_project_edt
 
   db:
-    image: postgres:13.8-bullseye
+    image: postgis/postgis:15-3.4-alpine
     hostname: test_project_edt-db
     environment:
       POSTGRES_PASSWORD: "test_project_edt"
       POSTGRES_USER: "test_project_edt"
       POSTGRES_DB: "test_project_edt"
+      POSTGRES_MULTIPLE_EXTENSIONS: "postgis,hstore,postgis_topology,postgis_raster,pgrouting"
+      RUN_AS_ROOT: "true"
+    ports:
+      - "6543:5432"
     volumes:
     - test_project_edt-db-data:/var/lib/postgresql/data
+    - ./initialize_database.sql:/docker-entrypoint-initdb.d/initialize_database.sql
     restart: always
     healthcheck:
       test: pg_isready -U test_project_edt
@@ -41,4 +46,5 @@ services:
 
 volumes:
   test_project_edt-db-data:
+    external: true
     name: test_project_edt-db-data
