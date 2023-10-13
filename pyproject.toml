@@ -26,6 +26,8 @@ opentelemetry-exporter-otlp = "^1.18.0"
 opentelemetry-instrumentation = "^0.39b0"
 opentelemetry-instrumentation-fastapi = "^0.39b0"
 opentelemetry-instrumentation-logging = "^0.39b0"
+kink = "^0.7.0"
+orjson = "^3.9.9"
 
 
 [tool.poetry.dev-dependencies]
