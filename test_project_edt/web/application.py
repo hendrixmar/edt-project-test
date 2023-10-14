@@ -6,7 +6,7 @@ from fastapi.responses import UJSONResponse
 from test_project_edt.web.api.router import api_router
 from test_project_edt.web.lifetime import (
     register_shutdown_event,
-    register_startup_event, lifespan,
+    register_startup_event,
 )
 
 
@@ -21,7 +21,7 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title="test_project_edt",
         version=metadata.version("test_project_edt"),
-        lifespan=lifespan,
+
         docs_url="/api/docs",
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",

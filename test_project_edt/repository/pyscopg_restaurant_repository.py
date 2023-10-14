@@ -10,7 +10,7 @@ from test_project_edt.db.models.statistics import Statistics
 
 class PsycopgRestaurantRepository:
     def __init__(self, connection: AsyncConnectionPool):
-        self.__connection = connection
+        self.__connection = connection.connection
 
     async def get_all(self) -> List[Restaurant]:
         async with (self.__connection() as conn,

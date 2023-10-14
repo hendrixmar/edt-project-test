@@ -24,17 +24,20 @@ from psycopg_pool import AsyncConnectionPool
 from test_project_edt.settings import settings
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    app.async_pool = AsyncConnectionPool(conninfo=str(settings.db_url),
-                                         kwargs={"row_factory": dict_row},
-                                         open=False)
-    yield
-    await app.async_pool.close()
+async def create_connection_pool():
+    return AsyncConnectionPool(
+                               conninfo=str(settings.db_url),
+                                         kwargs={"row_factory": dict_row},)
 
 
-def create_dependency_container(app: FastAPI):
-    di[AsyncConnectionPool] = lambda: lifespan(app)
+async def retrieve_db_pool():
+    pool = await create_connection_pool()
+    return pool
+
+
+
+
+
 
 
 def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
@@ -117,8 +120,6 @@ def register_startup_event(
     @app.on_event("startup")
     async def _startup() -> None:  # noqa: WPS430
         app.middleware_stack = None
-        create_dependency_container(app)
-        attach_app_exception_handlers(app)
         setup_opentelemetry(app)
         app.middleware_stack = app.build_middleware_stack()
         pass  # noqa: WPS420
