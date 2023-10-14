@@ -21,14 +21,14 @@ from opentelemetry.trace import set_tracer_provider
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 
-from test_project_edt.entities.http_entities import ClientErrorType, ClientError
 from test_project_edt.settings import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.async_pool = AsyncConnectionPool(conninfo=str(settings.db_url),
-                                         kwargs={"row_factory": dict_row})
+                                         kwargs={"row_factory": dict_row},
+                                         open=False)
     yield
     await app.async_pool.close()
 
