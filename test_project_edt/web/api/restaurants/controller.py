@@ -1,34 +1,32 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status, Request, HTTPException
-from psycopg import AsyncConnection
-from psycopg_pool import AsyncConnectionPool
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from test_project_edt.db.dependencies import inject_repository
 from test_project_edt.db.models.restaurant import Restaurant
 from test_project_edt.db.models.statistics import Statistics
-from test_project_edt.repository.pyscopg_restaurant_repository import \
-    PsycopgRestaurantRepository
-from test_project_edt.repository.resturant_repository_protocol import \
-    RestaurantRepository
-
-from test_project_edt.entities.restaurant import (CreateRestaurantValidator,
-                                                  UpdateRestaurantValidator)
-from test_project_edt.web.lifetime import retrieve_db_pool
+from test_project_edt.entities.common import PaginationParams
+from test_project_edt.entities.restaurant import (
+    CreateRestaurantValidator,
+    UpdateRestaurantValidator,
+)
+from test_project_edt.repository.resturant_repository_protocol import (
+    RestaurantRepository,
+)
 
 router = APIRouter()
 
 
-def inject_repository(connection_pool: AsyncConnectionPool = Depends(
-    retrieve_db_pool)) -> RestaurantRepository:
-
-    return PsycopgRestaurantRepository(connection_pool)
-
-
 @router.get("/restaurants")
 async def get_all_restaurants(
-    repository: RestaurantRepository = Depends(inject_repository)
+    repository: RestaurantRepository = Depends(inject_repository),
+    params: PaginationParams = Depends()
 ) -> List[Restaurant]:
-    return await repository.get_all()
+    """
+        Retrieve a list of restaurants with optional pagination parameters.
+    """
+
+    return await repository.get_all(params)
 
 
 @router.get("/restaurants/statistics")
@@ -38,14 +36,21 @@ async def get_restaurants_statistics(
     radius: float,
     repository: RestaurantRepository = Depends(inject_repository)
 ) -> Statistics:
+    """
+        Return statistics about how many restaurant exist in certain area, the average of the rating and the standard deviation of the rating
+
+    """
     return await repository.get_statistics(latitude, longitude, radius)
 
 
 @router.get("/restaurants/{restaurant_id}")
-async def get_all_restaurants(
+async def get_restaurants_by_id(
     restaurant_id: str,
     repository: RestaurantRepository = Depends(inject_repository)
 ) -> Restaurant:
+    """
+        Retrieve a restaurant by its unique identifier.
+    """
     result = await repository.get(restaurant_id)
     if not result:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -59,6 +64,9 @@ async def add_restaurant(
     restaurant_information: CreateRestaurantValidator,
     repository: RestaurantRepository = Depends(inject_repository)
 ) -> Restaurant:
+    """
+        Create a new restaurant with the provided information.
+    """
     return await repository.add(Restaurant(**restaurant_information.model_dump()))
 
 
@@ -69,6 +77,9 @@ async def update_restaurant(
     restaurant_information: UpdateRestaurantValidator,
     repository: RestaurantRepository = Depends(inject_repository)
 ):
+    """
+        Update an existing restaurant's information based on its unique identifier.
+    """
     await repository.update(restaurant_id,
                             Restaurant(**restaurant_information.model_dump()))
 
@@ -79,4 +90,7 @@ async def delete_restaurant(
     restaurant_id: str,
     repository: RestaurantRepository = Depends(inject_repository)
 ):
+    """
+        Delete a restaurant based on its unique identifier.
+    """
     await repository.delete(restaurant_id)

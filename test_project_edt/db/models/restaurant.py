@@ -3,6 +3,7 @@ import uuid
 from pydantic import Field, HttpUrl
 from pydantic.dataclasses import dataclass
 
+
 @dataclass
 class Restaurant:
     name: str | None = None

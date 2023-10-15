@@ -1,30 +1,34 @@
-from typing import List, NoReturn, Dict
+from typing import Dict, List, NoReturn
 
 from psycopg_pool import AsyncConnectionPool
 from pydantic import TypeAdapter
 
 from test_project_edt.db.models.restaurant import Restaurant
-
 from test_project_edt.db.models.statistics import Statistics
+from test_project_edt.entities.common import PaginationParams
 
 
 class PsycopgRestaurantRepository:
     def __init__(self, connection: AsyncConnectionPool):
         self.__connection = connection.connection
 
-    async def get_all(self) -> List[Restaurant]:
+    async def get_all(self, pagination_params: PaginationParams) -> List[Restaurant]:
+        params_dict = pagination_params.model_dump(mode='json')
         async with (self.__connection() as conn,
                     conn.cursor() as conn_check):
             res = await conn_check.execute(
-                """SELECT *
+                f"""SELECT *
                     FROM restaurants
-                    """
-
+                    ORDER BY %(order_by)s {params_dict['asc_or_desc']}
+                    LIMIT %(limit)s
+                    OFFSET %(offset)s;
+                """,
+                params=params_dict
             )
             rows = await res.fetchall()
             return [Restaurant(**row) for row in rows]
 
-    async def get(self, restaurant_id: int) -> Restaurant | None:
+    async def get(self, restaurant_id: str) -> Restaurant | None:
         async with (self.__connection() as conn,
                     conn.cursor() as conn_check):
             res = await conn_check.execute(
@@ -36,12 +40,12 @@ class PsycopgRestaurantRepository:
                     "id": restaurant_id,
                 }
             )
-            row = await res.fetchone()
+            row: Dict[str, str | int | float] | None = await res.fetchone()
             if not row:
                 return None
             return Restaurant(**row)
 
-    async def delete(self, restaurant_id: int) -> NoReturn:
+    async def delete(self, restaurant_id: str) -> NoReturn:
         async with (self.__connection() as conn,
                     conn.cursor() as conn_check):
             await conn_check.execute(
@@ -80,17 +84,14 @@ class PsycopgRestaurantRepository:
 
         async with (self.__connection() as conn,
                     conn.cursor() as conn_check):
-            temp_data: Dict = TypeAdapter(Restaurant).dump_python(restaurant_data,
-                                                                  exclude_none=True,
-                                                                  exclude={'id'})
+            temp_data: Dict[str, str | int | float] = TypeAdapter(
+                Restaurant).dump_python(restaurant_data,
+                                        exclude_none=True,
+                                        exclude={'id'})
             set_arguments: str = f",".join(
                 f"{k} = %({k})s" for k, v in temp_data.items()
             )
-            print(f"""
-                    UPDATE Restaurants
-                        SET {set_arguments}
-                    WHERE id = %(id)s;
-                """)
+
             await conn_check.execute(
                 f"""
                     UPDATE Restaurants
@@ -128,5 +129,5 @@ class PsycopgRestaurantRepository:
                 }
 
             )
-            row = await res.fetchone()
+            row: Dict[str, float] | None = await res.fetchone()
             return Statistics(**row)

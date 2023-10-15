@@ -14,7 +14,6 @@ from opentelemetry.sdk.resources import (
     TELEMETRY_SDK_LANGUAGE,
     Resource,
 )
-
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import set_tracer_provider
@@ -24,20 +23,15 @@ from psycopg_pool import AsyncConnectionPool
 from test_project_edt.settings import settings
 
 
-async def create_connection_pool():
+async def create_connection_pool() -> AsyncConnectionPool:
     return AsyncConnectionPool(
-                               conninfo=str(settings.db_url),
-                                         kwargs={"row_factory": dict_row},)
+        conninfo=str(settings.db_url),
+        kwargs={"row_factory": dict_row}, )
 
 
-async def retrieve_db_pool():
+async def retrieve_db_pool() -> AsyncConnectionPool:
     pool = await create_connection_pool()
     return pool
-
-
-
-
-
 
 
 def setup_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
@@ -102,8 +96,6 @@ def stop_opentelemetry(app: FastAPI) -> None:  # pragma: no cover
     FastAPIInstrumentor().uninstrument_app(app)
 
 
-
-
 def register_startup_event(
     app: FastAPI,
 ) -> Callable[[], Awaitable[None]]:  # pragma: no cover
@@ -125,7 +117,6 @@ def register_startup_event(
         pass  # noqa: WPS420
 
     return _startup
-
 
 
 def register_shutdown_event(
