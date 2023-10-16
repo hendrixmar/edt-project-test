@@ -7,7 +7,6 @@ from test_project_edt.entities.common import PaginationParams
 
 @runtime_checkable
 class RestaurantRepository(Protocol):
-
     async def get_all(self, pagination_param: PaginationParams) -> List[Restaurant]:
         ...
 
@@ -20,14 +19,15 @@ class RestaurantRepository(Protocol):
     async def add(self, restaurant_data: Restaurant) -> Restaurant:
         ...
 
-    async def update(self,
-                     restaurant_id: str,
-                     restaurant_data: Restaurant) -> Restaurant | None:
+    async def update(
+        self, restaurant_id: str, restaurant_data: Restaurant
+    ) -> Restaurant | None:
         ...
 
-
-    async def get_statistics(self,
-                             latitude: float,
-                             longitude: float,
-                             radius: float,) -> Statistics:
+    async def get_statistics(
+        self,
+        latitude: float,
+        longitude: float,
+        radius: float,
+    ) -> Statistics:
         ...

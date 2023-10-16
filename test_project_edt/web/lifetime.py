@@ -1,10 +1,7 @@
 import logging
-from contextlib import asynccontextmanager
 from typing import Awaitable, Callable
 
-from fastapi import FastAPI, status
-from fastapi.responses import ORJSONResponse
-from kink import di
+from fastapi import FastAPI
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -26,7 +23,8 @@ from test_project_edt.settings import settings
 async def create_connection_pool() -> AsyncConnectionPool:
     return AsyncConnectionPool(
         conninfo=str(settings.db_url),
-        kwargs={"row_factory": dict_row}, )
+        kwargs={"row_factory": dict_row},
+    )
 
 
 async def retrieve_db_pool() -> AsyncConnectionPool:

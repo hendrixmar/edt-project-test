@@ -21,7 +21,6 @@ def get_app() -> FastAPI:
     app = FastAPI(
         title="test_project_edt",
         version=metadata.version("test_project_edt"),
-
         docs_url="/api/docs",
         redoc_url="/api/redoc",
         openapi_url="/api/openapi.json",
