@@ -8,6 +8,19 @@ docstring_style=sphinx
 ignore =
   ; Found `f` string
   WPS305,
+  S104,
+  DAR101,
+  D202,
+  D205,
+  DAR201,
+  DAR401,
+  D104,
+  D209,
+  D101,
+  D103,
+  D102,
+  C812,
+  WPS428,
   ; Missing docstring in public module
   D100,
   ; Missing docstring in magic method
@@ -28,6 +41,8 @@ ignore =
   WPS326,
   ; Found string constant over-use
   WPS226,
+  WPS355,
+  D400,
   ; Found upper-case constant in a class
   WPS115,
   ; Found nested function

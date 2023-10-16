@@ -22,7 +22,7 @@ class ClientError(Exception):
         message -- Human readable message to provide information about the error.
     """
 
-    def __init__(self, client_error_type: ClientErrorType, message: str = ''):
+    def __init__(self, client_error_type: ClientErrorType, message: str = ""):
         self.client_error_type: ClientErrorType = client_error_type
         self.message = message
 

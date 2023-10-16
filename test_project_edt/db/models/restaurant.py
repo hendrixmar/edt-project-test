@@ -1,7 +1,8 @@
 import uuid
 
-from pydantic import Field, HttpUrl
+from pydantic import Field
 from pydantic.dataclasses import dataclass
+
 
 @dataclass
 class Restaurant:
@@ -15,5 +16,4 @@ class Restaurant:
     lat: float | None = None
     lng: float | None = None
     rating: int | None = Field(default=None, gte=0, lte=4)
-    id: str = str(uuid.uuid4())
-
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))

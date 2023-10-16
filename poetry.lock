@@ -1038,21 +1038,6 @@ plugins = ["setuptools"]
 requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
-name = "kink"
-version = "0.7.0"
-description = "Dependency injection for python."
-category = "main"
-optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "kink-0.7.0-py3-none-any.whl", hash = "sha256:661746babd0c1ee4cf576b9133acba0d620007ff40a37860afc4d13abdacadcd"},
-    {file = "kink-0.7.0.tar.gz", hash = "sha256:cea9e263b74d3f19131070a7e5a7076ba98f552eaeab67655c983f7b4cc15380"},
-]
-
-[package.dependencies]
-typing_extensions = ">=4.1.1,<5.0.0"
-
-[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
@@ -2861,4 +2846,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "b2ddb613a5ece24de191808cde48bcb18ccdad82b6ee19a062e7c6f9a56702df"
+content-hash = "1e808d1a2ab4b80c0ae98aef4bf726cc206b28e36f1b06936cf3ae64bc4dcd2e"

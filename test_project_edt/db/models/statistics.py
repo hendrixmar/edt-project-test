@@ -1,8 +1,13 @@
-from pydantic import Field, HttpUrl
+from typing import Annotated
+
+from pydantic import BeforeValidator, Field
 from pydantic.dataclasses import dataclass
+
 
 @dataclass
 class Statistics:
     count: int = Field(gte=0)
-    avg: float = Field(gte=0)
-    std: float = Field(gte=0, alias="stddev")
+    avg: Annotated[float, BeforeValidator(lambda value: value or 0)] = Field(gte=0)
+    std: Annotated[float, BeforeValidator(lambda value: value or 0)] = Field(
+        gte=0, alias="stddev",
+    )

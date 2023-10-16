@@ -22,7 +22,8 @@ poetry run python -m test_project_edt
 
 This will start the server on the configured host.
 
-You can find swagger documentation at `/api/docs`.
+You can find swagger documentation at `/api/docs`
+and the redoc documentation `/api/redoc`.
 
 You can read more about poetry here: https://python-poetry.org/
 

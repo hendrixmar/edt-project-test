@@ -50,11 +50,13 @@ jobs:
     services:
 
       test_project_edt-db:
-        image: postgres:13.8-bullseye
+        image: postgis/postgis:15-3.4-alpine
         env:
           POSTGRES_PASSWORD: test_project_edt
           POSTGRES_USER: test_project_edt
           POSTGRES_DB: test_project_edt
+          POSTGRES_MULTIPLE_EXTENSIONS: "postgis,hstore,postgis_topology,postgis_raster,pgrouting"
+          RUN_AS_ROOT: "true"
         options: >-
           --health-cmd="pg_isready"
           --health-interval=10s
